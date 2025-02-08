@@ -145,6 +145,7 @@ __DEV__ &&
         case REACT_SUSPENSE_LIST_TYPE:
           return "SuspenseList";
         case REACT_VIEW_TRANSITION_TYPE:
+          if (enableViewTransition) return "ViewTransition";
         case REACT_TRACING_MARKER_TYPE:
           if (enableTransitionTracing) return "TracingMarker";
       }
@@ -202,6 +203,7 @@ __DEV__ &&
         type === REACT_OFFSCREEN_TYPE ||
         type === REACT_SCOPE_TYPE ||
         (enableTransitionTracing && type === REACT_TRACING_MARKER_TYPE) ||
+        (enableViewTransition && type === REACT_VIEW_TRANSITION_TYPE) ||
         ("object" === typeof type &&
           null !== type &&
           (type.$$typeof === REACT_LAZY_TYPE ||
@@ -451,6 +453,9 @@ __DEV__ &&
           return describeBuiltInComponentFrame("Suspense");
         case REACT_SUSPENSE_LIST_TYPE:
           return describeBuiltInComponentFrame("SuspenseList");
+        case REACT_VIEW_TRANSITION_TYPE:
+          if (enableViewTransition)
+            return describeBuiltInComponentFrame("ViewTransition");
       }
       if ("object" === typeof type)
         switch (type.$$typeof) {
@@ -692,7 +697,8 @@ __DEV__ &&
         enableOwnerStacks ? oldElement._debugStack : void 0,
         enableOwnerStacks ? oldElement._debugTask : void 0
       );
-      newKey._store.validated = oldElement._store.validated;
+      oldElement._store &&
+        (newKey._store.validated = oldElement._store.validated);
       return newKey;
     }
     function validateChildKeys(node, parentType) {
@@ -1124,6 +1130,7 @@ __DEV__ &&
         dynamicFeatureFlags.enableUseResourceEffectHook,
       renameElementSymbol = dynamicFeatureFlags.renameElementSymbol,
       enableOwnerStacks = dynamicFeatureFlags.enableOwnerStacks,
+      enableViewTransition = dynamicFeatureFlags.enableViewTransition,
       REACT_LEGACY_ELEMENT_TYPE = Symbol.for("react.element"),
       REACT_ELEMENT_TYPE = renameElementSymbol
         ? Symbol.for("react.transitional.element")
@@ -1209,6 +1216,7 @@ __DEV__ &&
         A: null,
         T: null,
         S: null,
+        V: null,
         actQueue: null,
         isBatchingLegacy: !1,
         didScheduleLegacyUpdate: !1,
@@ -1875,6 +1883,14 @@ __DEV__ &&
     exports.unstable_Scope = REACT_SCOPE_TYPE;
     exports.unstable_SuspenseList = REACT_SUSPENSE_LIST_TYPE;
     exports.unstable_TracingMarker = REACT_TRACING_MARKER_TYPE;
+    exports.unstable_ViewTransition = REACT_VIEW_TRANSITION_TYPE;
+    exports.unstable_addTransitionType = function (type) {
+      var pendingTransitionTypes = ReactSharedInternals.V;
+      null === pendingTransitionTypes
+        ? (ReactSharedInternals.V = [type])
+        : -1 === pendingTransitionTypes.indexOf(type) &&
+          pendingTransitionTypes.push(type);
+    };
     exports.unstable_getCacheForType = function (resourceType) {
       var dispatcher = ReactSharedInternals.A;
       return dispatcher
@@ -1956,7 +1972,7 @@ __DEV__ &&
     exports.useTransition = function () {
       return resolveDispatcher().useTransition();
     };
-    exports.version = "19.1.0-www-classic-fd2d2799-20250117";
+    exports.version = "19.1.0-www-classic-062fb311-20250207";
     "undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ &&
       "function" ===
         typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop &&
