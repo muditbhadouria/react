@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<deec8b1d4b08aaddff0ef2466f9426b8>>
+ * @generated SignedSource<<75f6167c02052fac3f5b93a95b8ba14f>>
  */
 
 "use strict";
@@ -668,7 +668,8 @@ __DEV__ &&
         enableOwnerStacks ? oldElement._debugStack : void 0,
         enableOwnerStacks ? oldElement._debugTask : void 0
       );
-      newKey._store.validated = oldElement._store.validated;
+      oldElement._store &&
+        (newKey._store.validated = oldElement._store.validated);
       return newKey;
     }
     function validateChildKeys(node, parentType) {
@@ -1112,12 +1113,14 @@ __DEV__ &&
       REACT_OFFSCREEN_TYPE = Symbol.for("react.offscreen"),
       REACT_LEGACY_HIDDEN_TYPE = Symbol.for("react.legacy_hidden"),
       REACT_TRACING_MARKER_TYPE = Symbol.for("react.tracing_marker"),
+      REACT_VIEW_TRANSITION_TYPE = Symbol.for("react.view_transition"),
       MAYBE_ITERATOR_SYMBOL = Symbol.iterator,
       ReactSharedInternals = {
         H: null,
         A: null,
         T: null,
         S: null,
+        V: null,
         actQueue: null,
         isBatchingLegacy: !1,
         didScheduleLegacyUpdate: !1,
@@ -1757,6 +1760,14 @@ __DEV__ &&
     exports.unstable_Scope = REACT_SCOPE_TYPE;
     exports.unstable_SuspenseList = REACT_SUSPENSE_LIST_TYPE;
     exports.unstable_TracingMarker = REACT_TRACING_MARKER_TYPE;
+    exports.unstable_ViewTransition = REACT_VIEW_TRANSITION_TYPE;
+    exports.unstable_addTransitionType = function (type) {
+      var pendingTransitionTypes = ReactSharedInternals.V;
+      null === pendingTransitionTypes
+        ? (ReactSharedInternals.V = [type])
+        : -1 === pendingTransitionTypes.indexOf(type) &&
+          pendingTransitionTypes.push(type);
+    };
     exports.unstable_getCacheForType = function (resourceType) {
       var dispatcher = ReactSharedInternals.A;
       return dispatcher
@@ -1838,7 +1849,7 @@ __DEV__ &&
     exports.useTransition = function () {
       return resolveDispatcher().useTransition();
     };
-    exports.version = "19.1.0-native-fb-313c8c55-20250117";
+    exports.version = "19.1.0-native-fb-062fb311-20250207";
     "undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ &&
       "function" ===
         typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop &&
